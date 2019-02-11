@@ -1,0 +1,261 @@
+@import url('https://fonts.googleapis.com/css?family=Lobster|PT+Sans');
+$ff-main: 'Lobster', cursive;
+$ff-sans: 'PT Sans', sans-serif;
+$c-accent: #d6691b;
+$c-accent-yellow: #f3c22e;
+$c-main: #ffeee2;
+$c-link-border: #daa94e;
+
+body {
+    font-family: $ff-main;
+    background-color: #0a0813;
+    font-weight: normal!important;
+    color: $c-main;
+    text-align: center;
+  }
+  a {
+    color: $c-main;
+    &:hover {
+      color: $c-link-border;
+    }
+  }
+  #global-app-wrapper {
+    overflow: hidden;
+  }
+  .page-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin: 0px 0 35px;
+    color: $c-accent-yellow;
+    // font-family: $ff-sans;
+    text-transform: uppercase;
+  }
+  
+  .hidden{
+    display:none;
+  }
+  .show{
+    display:block;
+  }
+  
+  .button {
+    font-family: $ff-sans;
+    background-color: $c-accent;
+    border: none;
+    color: white;
+    padding: 3px 32px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0px;
+    outline: none !important;
+    min-width: 125px;
+    margin: 0 10px;
+  }
+  .back-to-menu {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
+  #primary-container {
+    position: fixed;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width: 100%;
+    left: 50%;
+    text-align: center;
+    max-height: calc(100% - 120px);
+    overflow-Y: auto;
+    overflow-X: hidden;
+  }
+  .main-navigation {
+    margin: 0 -2000px;
+    padding: 0 1000px;
+    ul {
+      list-style: none;
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      li {
+        margin: 3.5rem 0;
+      }
+      a {
+        font-size: 2.5rem;
+        &:hover {
+          color: #fff;
+          background-color: rgba(255, 193, 7, 0.05);
+        }
+      }
+    }
+  }
+  
+  .form-control {
+    font-size: 0.8rem;
+    font-family: $ff-sans;
+  }
+  .alert {
+    font-family: $ff-sans;
+    padding: 0 0 2px;
+    line-height: 1.4;
+    margin-top: 5px;
+    font-size: 0.8rem;
+  }
+  
+  .table {
+    margin: 0;
+    th {
+      font-family: $ff-sans;
+      background: #17a2b83d;
+    }
+  }
+  
+  #modal-container {
+    position:  fixed;
+    top: 50%;
+    left: 50%;
+    width: 375px;
+    background: white;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    box-shadow: 0px 0px 2px 1px black;
+    z-index: 100;
+    padding: 15px 15px;
+    .popup-title {
+      font-size: 2rem;
+      line-height: 2rem;
+      color: $c-accent-yellow;
+      margin-bottom: 1.5rem;
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    a {
+      color: #0a0813;
+      font-family: $ff-sans;
+    }
+  }
+  
+  #overlay {
+    position: absolute;
+    top: 0px;
+    left:  0px;
+    z-index:  99;
+    background:  rgba(0,0,0,0.8);
+    width:  100%;
+    height: 100%;
+  }
+
+#grid {
+  position: relative;
+  margin: 5px auto 25px;
+}
+
+.cell {
+  position: absolute;
+  line-height: 74px;
+  height: 74px;
+  color: #051d38;
+  border: 1px solid #051d38;
+  text-align: center;
+  font-size: 30px;
+  border-radius: 8px;
+  background: #e4e2da;
+  user-select: none;
+  transition: all .4s ease;
+
+  &.blank {
+    background: rgba(218, 232, 232, 0.04);
+    border-style: none;
+    box-shadow: none;
+  }
+
+  &.right-position {
+    border-color: #9ed089;
+    background: #9ed089;
+  }
+
+  &.hidden {
+    visibility: hidden;
+  }
+
+  &.winner {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emoji_Grinning_Face_Smiling_Eyes.svg/128px-Emoji_Grinning_Face_Smiling_Eyes.svg.png);
+    background-size: contain;
+  }
+}
+
+.play-component-meta {
+  max-width: 300px;
+  margin: 0 auto;
+  *background: #17a2b83d;
+
+  > div {
+    padding: 0 5px;
+  }
+
+  .moves-counter {
+    text-align: left;
+  }
+
+  .time-counter {
+    text-align: right;
+  }
+}
+
+#clock {
+  font-family: monospace;
+  font-size: 48px;
+}
+
+#clock.slow {
+  color: red;
+}
+
+@keyframes slideright {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(calc(100% + 6px), 0);
+  }
+}
+
+@keyframes slideleft {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(calc(-100% - 6px), 0);
+  }
+}
+
+@keyframes slideup {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(0, calc(-100% - 6px));
+  }
+}
+
+@keyframes slidedown {
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(0, calc(+100% + 6px));
+  }
+}
+
+
+  
