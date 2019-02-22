@@ -1,8 +1,10 @@
 import React from 'react';
+import { Route, Redirect } from 'react-router'
 import { FormErrors } from '../form-errors/form-errors.component';
 import { PlayerServiceService } from '../../services/player-service.service';
 import { Player } from '../../models';
-import { type } from 'os';
+import { userLoggedIn } from '../../actions';
+import { connect } from 'react-redux';
 
 type State = {
     userLogin: string
@@ -12,7 +14,7 @@ type State = {
 }
 type formFieldsEnum = 'userLogin';
 
-export default class FifteenLogin extends React.Component<{}, State> {
+class FifteenLogin extends React.Component<any, State> {
 
     playerServiceService: PlayerServiceService;
 
@@ -68,12 +70,15 @@ export default class FifteenLogin extends React.Component<{}, State> {
         this.playerServiceService
             .loginUser(this.state.userLogin)
             .then((player : Player) => {
-                // this.router.navigate(['/']);
+                localStorage.setItem('player', JSON.stringify(player));
+                this.props.userLoggedIn(player);
             });
     }
 
     render() {
         return (
+            this.props.reduxState.isAuthenticated ? 
+            <Redirect to="/"/> :
             <div>
                 <h2 className="page-title">Enter the name</h2>
                 <div className="login-form-wrapper">
@@ -100,3 +105,15 @@ export default class FifteenLogin extends React.Component<{}, State> {
         );
     }
 }
+
+const mapStateToProps = ( {authentication}: any ) => ({
+    reduxState: authentication
+})
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        userLoggedIn: (player: Player) => {
+            dispatch(userLoggedIn(player));
+        }
+    }
+};
+export default connect(mapStateToProps, mapDispatchToProps)(FifteenLogin)

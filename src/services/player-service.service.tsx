@@ -22,6 +22,12 @@ export class PlayerServiceService {
         return this.playerSubject;
     }
 
+    public getPlayers() {
+        return this.db.allDocs({
+            include_docs: true
+        });
+    }
+
     public loginUser( userLogin: string ): Promise<Player> {
         const userPromise = this.db.allDocs({
             include_docs: true
@@ -59,7 +65,6 @@ export class PlayerServiceService {
         }).then( (result:any) => {
             this.player = new Player( result.rows[0].doc._id, result.rows[0].doc.name );
             this.playerSubject.next( this.player );
-            localStorage.setItem('player', JSON.stringify(this.player));
             return this.player;
         }).catch(function (err:any) {
             console.log(err);

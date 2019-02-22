@@ -1,97 +1,83 @@
 
 import { Points, Player } from '../models/index';
 import { v4 as uuid } from 'uuid';
-import * as $PouchDB from 'pouchdb';
-import { PlayerServiceService } from './player-service.service';
+import PouchDB from 'pouchdb';
+import { from, Observable, of } from 'rxjs';
+import { map, filter, tap } from 'rxjs/operators';
 
 export class PointsServiceService {
-/*
-  private db: any;
-  private points: Points;
-  private player: Player;
 
-  constructor(public playerServiceService: PlayerServiceService) {
+  private db: PouchDB.Database;
+
+  constructor() {
       this.db = new PouchDB('fifteen_db_points');
-      this.playerServiceService.getPlayer().subscribe( player => {
-          if (player instanceof Player) {
-              this.player = player
-          }
-      } );
   }
 
-  public getTopPlayers( amount: number ) {
+  public getTopPlayers( amount: number = 10 ) {
       return this.db.allDocs({
           include_docs: true,
           descending: true
-      }).then( (result) => {
+      }).then( (result: any) => {
           if ( result.rows.length > 0 ) {
               return result.rows
-                  .sort( (a, b) => {
-                    return a.doc.moves - b.doc.moves;
+                  .sort( ({doc: docA}: any, {doc: docB}: any) => {
+                    return docA.moves - docB.moves;
                   })
                   .slice( 0, amount )
-                  .map((dbItem) => {
+                  .map((dbItem:any) => {
                       const itemProps = dbItem.doc;
-                      return new Points(itemProps._id, itemProps.moves, itemProps.time, itemProps.player_id, itemProps.player);
+                      return new Points( itemProps._id, itemProps.moves, itemProps.time, itemProps.player_id );
                   });
           } else {
               return [];
           }
-      }).catch( (err) => {
+      }).catch( (err: string) => {
           console.log(err);
       });
   }
 
-  public setNewResult( moves: number, time: number ) {
-      let haveToBeUpdated = '';
-      return this.db.allDocs({
-          include_docs: true,
-          descending: true,
-      }).then( (result) => {
-          haveToBeUpdated = this.isPointsHaveToBeUpdated( result.rows, moves, time );
-          if ( haveToBeUpdated ) {
-              this.points = new Points( haveToBeUpdated, moves, time, this.player._id, this.player );
-              this.updatePlayerResults( this.points, haveToBeUpdated );
-          }
-      }).catch((err) => {
-          console.log(err);
-      });
-  }
 
-  private updatePlayerResults( points: Points, uuid: string = '' ) {
-      return this.db.put( points ).then( (result) => {
+  public setDbResults( points: Points[] ) {
+      return this.db.bulkDocs( points ).then( (result: any) => {
           console.log( 'Successfully posted !', result );
           return result;
-      }).catch( (err) => {
+      }).catch( (err: string) => {
           console.log(err);
       });
   }
 
 
-  private isPointsHaveToBeUpdated( dbRows, moves, time ): string {
-      for ( let i = 0; i < dbRows.length; i++) {
-          const row = dbRows[i].doc;
-          if ( row.player_id === this.player._id ) {
-              if ( moves < row.moves || time < row.time )  {
-                  this.db.remove(row);
-                  return row._id;
-              } else {
-                  return '';
-              }
-          }
-      }
-      return uuid();
+  public getPlayerPoints(playerID: string): Observable<Points[]> {
+    return from(
+        this.db.allDocs({
+        include_docs: true,
+        descending: true,
+    })).pipe(
+        map(( {rows}: any ) => {
+            return rows.map(({doc}: any) => doc).filter((points: Points)=> points.player_id === playerID)
+        })
+    )
   }
 
-  public createTestDb() {
+  public isPointsHaveToBeUpdated( row: Points, moves: number, time: number ): boolean {
+    return ( moves < row.moves || time < row.time ) ? true : false;
+  }
+
+  public createTestDb(): void {
       const pointsArr = [];
       for ( let i = 0; i < 15; i++ ) {
-          pointsArr.push( new Points( uuid(), i, i + 25, uuid() ) );
+          pointsArr.push( this.newPointsFactory(i, i + 25, uuid()) );
       }
-      this.db.bulkDocs( pointsArr ).then( (result) => {
+      this.db.bulkDocs( pointsArr ).then( (result: any) => {
           console.log( 'Successfully posted !', result );
-      }).catch( (err) => {
+      }).catch( (err: string) => {
           console.log(err);
       });
-  }*/
+  }
+
+  public newPointsFactory(moves: number = 0, time: number = 0, player_id: string = ''): Points {
+    return new Points(uuid(), moves, time, player_id);
+  }
 }
+
+

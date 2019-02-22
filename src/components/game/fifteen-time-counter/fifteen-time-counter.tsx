@@ -1,7 +1,7 @@
 import React from 'react';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Subscription } from 'rxjs/Subscription';
-import DateFormatterService from './../../../services/date-formatter.service';
+import DateFormatterService from '../../../utils/date-formatter';
 
 type State = {
     seconds: number,
@@ -9,7 +9,8 @@ type State = {
 
 export default class FifteenTimeCounter extends React.Component<{}, State> {
 
-    dateFormatterService: DateFormatterService;
+    private dateFormatterService: DateFormatterService;
+    private subscription: Subscription | null;
 
     constructor(props: any) {
         super(props);
@@ -19,7 +20,9 @@ export default class FifteenTimeCounter extends React.Component<{}, State> {
         this.dateFormatterService = new DateFormatterService();
     }
 
-    private subscription: Subscription | null;
+    componentWillUnmount() {
+        this.stop();
+    }
 
     render() {
         return (

@@ -1,15 +1,21 @@
 import React from 'react';
 import FifteenTimeCounter from '../fifteen-time-counter/fifteen-time-counter';
 import FifteenGameBoard from '../fifteen-game-board/fifteen-game-board';
+import { PointsServiceService } from '../../../services/points-service.service';
+import { connect } from 'react-redux';
+import { RootState, Player } from '../../../models';
 
 type State = {
     movesCounter: number,
-    isGameActive: boolean
+    isGameActive: boolean,
 }
-export default class FifteenPlayGame extends React.Component<{}, State> {
+type Props = {
+    reduxState: RootState
+}
+class FifteenPlayGame extends React.Component<Props, State> {
     
-    timerComponent: any;
-    gameBoardComponent: any;
+    timerComponent: React.RefObject<FifteenTimeCounter>;
+    gameBoardComponent: React.RefObject<FifteenGameBoard>;
 
     constructor(props: any) {
         super(props);
@@ -30,6 +36,7 @@ export default class FifteenPlayGame extends React.Component<{}, State> {
             movesCounter: 0,
             isGameActive: true
         });
+        if (!this.timerComponent || !this.timerComponent.current || !this.gameBoardComponent || !this.gameBoardComponent.current) return;
         this.timerComponent.current.reset();
         this.timerComponent.current.start();
         this.gameBoardComponent.current.initBoard();
@@ -41,7 +48,8 @@ export default class FifteenPlayGame extends React.Component<{}, State> {
                 isGameActive: !state.isGameActive
             }
         });
-        this.timerComponent.toggleState(this.state.isGameActive);
+        if (!this.timerComponent || !this.timerComponent.current) return false;
+        this.timerComponent.current.toggleState(this.state.isGameActive);
         return this.state.isGameActive;
     }
 
@@ -55,14 +63,25 @@ export default class FifteenPlayGame extends React.Component<{}, State> {
 
     setPlayerResult = ($event: any) => {
         console.log(event);
-        // this.pointsServiceService.setNewResult(this.movesCounter, this.timerComponent.getTimeSeconds());
+        const pointsServiceService: PointsServiceService = new PointsServiceService();
+        const moves = this.state.movesCounter;
+        if (!this.timerComponent || !this.timerComponent.current || !this.props.reduxState.player) return;
+        const player = this.props.reduxState.player;
+        const time = this.timerComponent.current.getTimeSeconds();
+        pointsServiceService.getPlayerPoints(player._id).subscribe( ([points])=> {
+            if (!points) {
+                pointsServiceService.setDbResults([pointsServiceService.newPointsFactory(moves,time,player._id)]);
+            } else if(pointsServiceService.isPointsHaveToBeUpdated(points, moves, time)) {
+                pointsServiceService.setDbResults([{...points, moves: moves, time: time}]);
+            }
+        });
         // this.modalService.init(FinishGamePopupComponent, {moves: this.movesCounter, time: this.timerComponent.getTimeSeconds()}, {});
     }
     
     render () {
         return(
             <div id="fifteen-play-game-component">
-               <h1 className="page-title" onClick={($event: any) => this.setPlayerResult($event)} >Lets The Action Begin!</h1>
+               <h1 className="page-title">Lets The Action Begin!</h1>
                 <div className="play-component-meta row align-items-center">
                     <div className="col-md-6 moves-counter">
                         {this.state.movesCounter}
@@ -80,3 +99,9 @@ export default class FifteenPlayGame extends React.Component<{}, State> {
     }
     
 }
+
+
+const mapStateToProps = ( {authentication}: any ) => ({
+    reduxState: authentication
+})
+export default connect(mapStateToProps)(FifteenPlayGame)

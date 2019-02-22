@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-const FifteenHome = () => {
-    return(
+const FifteenHome = ({reduxState}: any) => {
+    return (
         <div>
-            {/* <h1
-                class="page-title player-title"
-                *ngIf="player && player._id != '0'">
-                Greetings {{ player.name }}
-            </h1> */}
+            { reduxState.isAuthenticated ? 
+            (<h1 className="page-title player-title">
+                Greetings { reduxState.player.name }
+            </h1>)
+            : ''
+            }
             <nav className="nav main-navigation">
                 <ul>
                     <li>
@@ -26,4 +28,8 @@ const FifteenHome = () => {
     );
 }
 
-export default FifteenHome;
+const mapStateToProps = ({ authentication }: any) => ({
+    reduxState: authentication
+})
+
+export default connect(mapStateToProps)(FifteenHome);

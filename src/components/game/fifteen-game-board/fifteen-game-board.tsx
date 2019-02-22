@@ -28,7 +28,7 @@ export default class FifteenGameBoard extends React.Component<Props, State> {
         this.tileGap = 6;
         this.tileWidth = this.containerWidth / 4;
         this.tileHeight = this.containerWidth / 4;
-        console.log('FifteenGameBoard constructor --->');
+        // console.log('FifteenGameBoard constructor --->');
     }
 
     componentDidMount() {
@@ -113,7 +113,7 @@ export default class FifteenGameBoard extends React.Component<Props, State> {
             tiles: this.tiles
         });
         this.props.incrementMoveCounter();
-        //this.incrementMoveCounter.emit('Move It');
+        this.props.putScore('You win!');
         this.checkWin();
         return;
     }
@@ -125,7 +125,7 @@ export default class FifteenGameBoard extends React.Component<Props, State> {
                 return false;
             }
         }
-        this.props.putScore('You win!');
+        //this.props.putScore('You win!');
         //  this.pointsServiceService.setNewResult( this.movesCounter, this.timerComponent.getTimeSeconds() );
         return true;
     }

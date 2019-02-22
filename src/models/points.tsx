@@ -6,6 +6,6 @@ export class Points {
         public moves: number,
         public time: number,
         public player_id: string,
-        public player?: Player
+        public _rev?: string
     ) {}
 }

@@ -1,3 +1,4 @@
-export { Player } from './player';
-export { Points } from './points';
-export { Tile } from './tile';
+export * from './player';
+export * from './points';
+export * from './tile';
+export * from './root-state';
