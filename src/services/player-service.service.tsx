@@ -1,79 +1,65 @@
 import { v4 as UUID } from 'uuid'
 import PouchDB from 'pouchdb';
-import { ReplaySubject } from 'rxjs';
-import { Player } from '../models';
+import { from, Observable } from 'rxjs';
+import { Player, DbDocPlayer } from '../models';
+import { map, switchMap } from 'rxjs/operators';
 
 export class PlayerServiceService {
 
-    private playerSubject = new ReplaySubject(1);
-    private player: Player;
-    private db: any;
+    private db: PouchDB.Database;
 
     constructor() {
-        this.db = new PouchDB('fifteen_db');
-        let localStorageUser =  localStorage.getItem('player') ? localStorage.getItem('player') : '';
-        if(localStorageUser) {
-            this.player =  JSON.parse(localStorageUser);
-            this.loginUser(this.player.name);
-        }
+        this.db = new PouchDB('fifteen_db_players');
     }
 
-    public getPlayer() {
-        return this.playerSubject;
+    public getPlayers(): Observable<DbDocPlayer> {
+        return from(
+            this.db.allDocs({
+                include_docs: true,
+                descending: true,
+            })).pipe(
+                switchMap(({ rows }) => from(rows)),
+                map(({ doc }) => doc as DbDocPlayer),
+            )
     }
 
-    public getPlayers() {
-        return this.db.allDocs({
-            include_docs: true
-        });
-    }
-
-    public loginUser( userLogin: string ): Promise<Player> {
-        const userPromise = this.db.allDocs({
-            include_docs: true
-        }).then( (result: any) => {
-            if ( result.rows.length < 1 && !this.isUserExist( result.rows, userLogin ) ) {
-                return this.createNewUser( userLogin ).then((createdUser: any) => {
-                    return this.getUserFromDb( createdUser.id );
-                });
-            } else {
-                return this.getUserFromDb( result.rows.find((item: any) => item.doc.name === userLogin ).id );
-            }
-        }).catch( (err: any) => {
-            console.log(err);
-        });
-        return userPromise;
-    }
-
-    private createNewUser( userLogin: string ) {
-        const uuid = UUID();
-        this.player = new Player( uuid, userLogin );
-        this.playerSubject.next( this.player );
-        return this.db.put( this.player).then(function (result:any) {
-            console.log( 'Successfully posted !', result );
-            return result;
-        }).catch(function (err:any) {
-            console.log(err);
-        });
-    }
-
-    private getUserFromDb( userId: string ): Promise<Player> {
-        return this.db.allDocs({
+    public getPlayer(userId: string): Observable<DbDocPlayer> {
+        return from(this.db.allDocs({
             include_docs: true,
             startkey: userId,
             endkey: userId
-        }).then( (result:any) => {
-            this.player = new Player( result.rows[0].doc._id, result.rows[0].doc.name );
-            this.playerSubject.next( this.player );
-            return this.player;
-        }).catch(function (err:any) {
-            console.log(err);
-        });
+        })).pipe(
+            switchMap(({ rows }) => from(rows)),
+            map(({ doc }) => doc as DbDocPlayer),
+        );
     }
 
-    private isUserExist( dbRows:any, userLogin:string ): boolean {
-        return dbRows.some(function(row:any) {
-            return userLogin === row.doc.name;
-        });
+    public loginUser(userLogin: string): Observable<DbDocPlayer> {
+        return from(this.db.allDocs({
+            include_docs: true
+        })).pipe(
+            switchMap((result: any) => {
+                if (result.rows.length < 1 || !this.isUserExist(result.rows, userLogin)) {
+                    return this.createNewUser(userLogin).pipe(
+                        switchMap(([createdUser]) => {
+                            return this.getPlayer(createdUser.id);
+                        }
+                    ));
+                } 
+                const existUser = result.rows.find((item: any) => item.doc.name === userLogin);
+                return this.getPlayer(existUser.id || '');
+            }))
+    }
+
+    private createNewUser(userLogin: string): Observable<any> {
+        const uuid = UUID();
+        const player = new Player(uuid, userLogin);
+        return from(this.db.bulkDocs([player]));
+    }
+
+
+
+    private isUserExist(dbRows: any, userLogin: string): boolean {
+        return dbRows.some( (row: any) => userLogin === row.doc.name );
     }
 }

@@ -1,7 +1,6 @@
-import { RootState } from '../models';
 import { AnyAction, Reducer } from 'redux';
 
-const global: Reducer = (state = {test: 'test'}, action: AnyAction) => {
+const global: Reducer = (state = {}, action: AnyAction) => {
     switch (action.type) {
         default:
         return state

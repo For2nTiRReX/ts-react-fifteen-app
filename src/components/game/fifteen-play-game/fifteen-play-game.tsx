@@ -68,7 +68,7 @@ class FifteenPlayGame extends React.Component<Props, State> {
         if (!this.timerComponent || !this.timerComponent.current || !this.props.reduxState.player) return;
         const player = this.props.reduxState.player;
         const time = this.timerComponent.current.getTimeSeconds();
-        pointsServiceService.getPlayerPoints(player._id).subscribe( ([points])=> {
+        pointsServiceService.getPlayerPoints(player._id).subscribe( (points)=> {
             if (!points) {
                 pointsServiceService.setDbResults([pointsServiceService.newPointsFactory(moves,time,player._id)]);
             } else if(pointsServiceService.isPointsHaveToBeUpdated(points, moves, time)) {

@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Lobster|PT+Sans');
+@import './../../node_modules/bootstrap/scss/bootstrap.scss';
+
 $ff-main: 'Lobster', cursive;
 $ff-sans: 'PT Sans', sans-serif;
 $c-accent: #d6691b;
@@ -107,6 +109,7 @@ body {
   
   .table {
     margin: 0;
+    color: $c-main;
     th {
       font-family: $ff-sans;
       background: #17a2b83d;

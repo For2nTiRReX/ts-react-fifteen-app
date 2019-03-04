@@ -22,8 +22,9 @@ class FifteenStatistic extends React.Component<{}, State> {
     }
 
     getTableValues() {
-        this.pointsServiceService.getTopPlayers().then(
+        this.pointsServiceService.getTopPlayers().subscribe(
             (pointItem: Points[]) => {
+                console.log(pointItem);
                 this.setState({
                     topScores: [...pointItem]
                 });

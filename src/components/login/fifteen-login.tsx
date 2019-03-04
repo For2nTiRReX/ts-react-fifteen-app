@@ -1,10 +1,11 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router'
+import { Route, Redirect } from 'react-router';
 import { FormErrors } from '../form-errors/form-errors.component';
 import { PlayerServiceService } from '../../services/player-service.service';
 import { Player } from '../../models';
 import { userLoggedIn } from '../../actions';
 import { connect } from 'react-redux';
+import './fifteen-login.scss';
 
 type State = {
     userLogin: string
@@ -69,7 +70,7 @@ class FifteenLogin extends React.Component<any, State> {
         if (!this.state.formValid) return;
         this.playerServiceService
             .loginUser(this.state.userLogin)
-            .then((player : Player) => {
+            .subscribe((player : Player) => {
                 localStorage.setItem('player', JSON.stringify(player));
                 this.props.userLoggedIn(player);
             });
