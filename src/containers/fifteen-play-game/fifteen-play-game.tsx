@@ -1,9 +1,9 @@
 import React from 'react';
-import FifteenTimeCounter from '../fifteen-time-counter/fifteen-time-counter';
-import FifteenGameBoard from '../fifteen-game-board/fifteen-game-board';
-import { PointsServiceService } from '../../../services/points-service.service';
+import FifteenTimeCounter from '../../components/game/fifteen-time-counter/fifteen-time-counter';
+import FifteenGameBoard from '../../components/game/fifteen-game-board/fifteen-game-board';
+import { PointsServiceService } from '../../services/points-service.service';
 import { connect } from 'react-redux';
-import { RootState, Player } from '../../../models';
+import { RootState, Player } from '../../models';
 
 type State = {
     movesCounter: number,

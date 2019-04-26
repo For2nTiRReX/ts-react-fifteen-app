@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import FifteenNavigation from '../navigation/fifteen-navigation';
 
 const FifteenHome = ({reduxState}: any) => {
     return (
@@ -11,19 +11,7 @@ const FifteenHome = ({reduxState}: any) => {
             </h1>)
             : ''
             }
-            <nav className="nav main-navigation">
-                <ul>
-                    <li>
-                        <Link to="game" className="nav-link">Play</Link>
-                    </li>
-                    <li>
-                        <Link to="top-players" className="nav-link">Records</Link>
-                    </li>
-                    <li>
-                        <Link to="login" className="nav-link">Log in</Link>
-                    </li>
-                </ul>
-            </nav>
+            <FifteenNavigation/>
         </div>
     );
 }
